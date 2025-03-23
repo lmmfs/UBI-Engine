@@ -1,6 +1,6 @@
 use std::{f32::consts::PI, time::Instant};
 
-use sdl2::event::Event;
+use sdl2::event::{Event, WindowEvent};
 
 mod windsdl;
 use windsdl::Windsdl;
@@ -8,8 +8,8 @@ mod objects;
 use objects::*;
 
 fn main() {
-    println!("Hello, world!");
     let mut windsdl = Windsdl::new(800, 600).unwrap();
+    unsafe { gl::Viewport(0, 0, 800, 600) }
 
     let program = create_program().unwrap();
     program.set();
@@ -26,6 +26,14 @@ fn main() {
     let ibo = Ibo::generate();
     ibo.set(&indices);
 
+    let u_resolution = Uniform::new(program.id(), "u_resolution").unwrap();
+    let u_time = Uniform::new(program.id(), "u_time").unwrap();
+
+    unsafe { 
+        gl::Uniform2f(u_resolution.id, 800., 600.);
+        gl::Uniform1f(u_time.id, 0.0);
+    }
+
     let start = Instant::now();
     let mut seconds_elapsed: u32 = 0;
 
@@ -33,24 +41,33 @@ fn main() {
         for event in windsdl.event_pump.poll_iter() {
             match event {
                 Event::Quit { .. } => break 'running, 
+                Event::Window { win_event, .. } => {
+                    if let WindowEvent::Resized(width, height) = win_event {
+                        unsafe {
+                            gl::Viewport(0, 0, width, height);
+                            gl::Uniform2f(u_resolution.id, width as f32, height as f32)
+                        }
+                    }
+                }
 
                 _ => { }, 
             }
         }
 
         unsafe {
-            gl::ClearColor(0.5, 0.2, 0.2, 1.0);
+            gl::ClearColor(20./255., 20./255., 20./255., 1.0);
             gl::Clear(gl::COLOR_BUFFER_BIT);
 
             if start.elapsed().as_secs_f32().floor() as u32 > seconds_elapsed {
                 seconds_elapsed += 1;
 
-                (vertices, indices) = triangle_fan(seconds_elapsed + 3);
+                (vertices, indices) = triangle_fan(seconds_elapsed % 6 + 3);
                 println!("{:?}\n{:?}", vertices, indices);
                 vbo.set(&vertices);
                 ibo.set(&indices);
             }
-
+            
+            gl::Uniform1f(u_time.id, start.elapsed().as_secs_f32());
             gl::DrawElements(
                 gl::TRIANGLES, 
                 indices.len() as i32, 

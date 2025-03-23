@@ -21,6 +21,7 @@ impl Windsdl {
 
         let window = video_subsystem
             .window("rusty", width as u32, height as u32)
+            .resizable()
             .opengl()
             .build()
             .unwrap();

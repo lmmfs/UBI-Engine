@@ -1,3 +1,4 @@
+use core::time;
 use std::{f32::consts::PI, time::Instant};
 
 use sdl2::event::{Event, WindowEvent};
@@ -6,6 +7,8 @@ mod windsdl;
 use windsdl::Windsdl;
 mod objects;
 use objects::*;
+mod transform;
+use transform::*;
 
 fn main() {
     let mut windsdl = Windsdl::new(800, 600).unwrap();
@@ -26,12 +29,19 @@ fn main() {
     let ibo = Ibo::generate();
     ibo.set(&indices);
 
+    let mut model_matrix: Mat4 = Mat4::new();
+    let mut view_matrix: Mat4 = Mat4::new();
+
     let u_resolution = Uniform::new(program.id(), "u_resolution").unwrap();
     let u_time = Uniform::new(program.id(), "u_time").unwrap();
+    let u_model = Uniform::new(program.id(), "u_model_matrix").unwrap();
+    let u_view = Uniform::new(program.id(), "u_view_matrix").unwrap();
 
     unsafe { 
         gl::Uniform2f(u_resolution.id, 800., 600.);
         gl::Uniform1f(u_time.id, 0.0);
+        gl::UniformMatrix4fv(u_model.id, 1, gl::TRUE, model_matrix.ptr());
+        gl::UniformMatrix4fv(u_view.id, 1, gl::TRUE, view_matrix.ptr());
     }
 
     let start = Instant::now();
@@ -62,12 +72,24 @@ fn main() {
                 seconds_elapsed += 1;
 
                 (vertices, indices) = triangle_fan(seconds_elapsed % 6 + 3);
-                println!("{:?}\n{:?}", vertices, indices);
                 vbo.set(&vertices);
                 ibo.set(&indices);
             }
-            
+            model_matrix = Mat4::new();
+            view_matrix = Mat4::new();
+
+            let time_mod = start.elapsed().as_secs_f32() % 6.0;
+            model_matrix.scale((time_mod+1.0)/5.0, (time_mod+1.0)/5.0, 0.0);
+            model_matrix.rotate_z(time_mod.powi(3) / 2.);
+            view_matrix.lookat(
+                (time_mod / 3.0 * PI).sin()*0.5, 0.2, (time_mod / 3.0 * PI).cos()*0.5, 
+                0.0, 0.0, 0.0, 
+                0.0, 1.0, 0.0
+            );
+
             gl::Uniform1f(u_time.id, start.elapsed().as_secs_f32());
+            gl::UniformMatrix4fv(u_model.id, 1, gl::TRUE, model_matrix.ptr());
+            gl::UniformMatrix4fv(u_view.id, 1, gl::TRUE, view_matrix.ptr());
             gl::DrawElements(
                 gl::TRIANGLES, 
                 indices.len() as i32, 

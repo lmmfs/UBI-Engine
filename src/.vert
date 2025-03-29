@@ -3,9 +3,11 @@
 layout (location = 0) in vec2 Position;
 
 uniform vec2 u_resolution;
+uniform mat4 u_model_matrix;
+uniform mat4 u_view_matrix;
 
 void main() {
-    vec2 uv = Position;
+    vec4 uv = u_view_matrix * u_model_matrix * vec4(Position, 0.0, 1.0);
 
     if (u_resolution.x > u_resolution.y) {
         uv.x *= u_resolution.y / u_resolution.x;
@@ -13,6 +15,6 @@ void main() {
         uv.y *= u_resolution.x / u_resolution.y;
     }
 
-    gl_Position = vec4(uv, 0.0, 1.0);
+    gl_Position = uv;
 
 }

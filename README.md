@@ -38,3 +38,24 @@ Run the application
 ```
 
 
+## Rust crates
+
+**gl:** [crate](https://crates.io/crates/gl) for opengl bindings
+
+**sdl2:** [crate](https://crates.io/crates/sdl2) for sdl2 bindings 
+
+**image:** [crate](https://crates.io/crates/image) for image loading
+
+**gltf:** to add [crate](https://crates.io/crates/gltf) for .gltf and .glb files 
+
+**assimp:** to add [crate](https://crates.io/crates/assimp) for assimp library bidings for 3d model loading 
+
+## Roadmap
+
+- Logging
+
+- ECS style system
+
+- Data manager
+
+- Engine scenes

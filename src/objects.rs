@@ -1,6 +1,8 @@
-use std::{ffi::{CStr, CString}, ptr::{null, null_mut}};
+use std::{ffi::{c_void, CStr, CString}, mem, ptr::{null, null_mut}};
 
-use gl::{types::{GLchar, GLenum, GLint, GLuint}, DeleteBuffers};
+use gl::{types::{GLchar, GLenum, GLint, GLuint, GLsizei}, DeleteBuffers};
+
+use image::{GenericImageView, ImageResult};
 
 // An OpenGL Shader
 pub struct Shader {
@@ -114,7 +116,7 @@ fn create_whitspace_cstring_with_len(len: usize) -> CString {
 pub fn create_program() -> Result<Program, &'static str> {
     let vert_shader = Shader::from_source(&CString::new(include_str!(".vert")).unwrap(), gl::VERTEX_SHADER).unwrap(); 
     let frag_shader = Shader::from_source(&CString::new(include_str!(".frag")).unwrap(), gl::FRAGMENT_SHADER).unwrap();
-
+    check_gl_error();
     let shader_program = Program::from_shaders(&[vert_shader, frag_shader]).unwrap();
 
     Ok(shader_program)
@@ -126,7 +128,7 @@ pub struct Vbo {
 }
 
 impl Vbo {
-    pub fn generate() -> Self {
+    pub fn gen() -> Self {
         let mut id: GLuint = 0;
         unsafe { gl::GenBuffers(1, &mut id); }
         Vbo { id }
@@ -175,7 +177,7 @@ pub struct Ibo {
 }
 
 impl Ibo {
-    pub fn generate() -> Self {
+    pub fn gen() -> Self {
         let mut id: GLuint = 0;
         unsafe { gl::GenBuffers(1, &mut id); }
         Ibo { id }
@@ -223,7 +225,7 @@ pub struct Vao {
 }
 
 impl Vao {
-    pub fn generate() -> Self {
+    pub fn gen() -> Self {
         let mut id: GLuint = 0;
         unsafe { gl::GenVertexArrays(1, &mut id); }
         Vao { id }
@@ -239,12 +241,22 @@ impl Vao {
            gl::EnableVertexAttribArray(0);
            gl::VertexAttribPointer(
                 0, 
+                3, 
+                gl::FLOAT, 
+                gl::FALSE, 
+                (5 * std::mem::size_of::<f32>()) as GLint, 
+                null()
+            );
+            gl::EnableVertexAttribArray(1);
+            gl::VertexAttribPointer(
+                1, 
                 2, 
                 gl::FLOAT, 
                 gl::FALSE, 
-                (2 * std::mem::size_of::<f32>()) as GLint, 
-                null()
+                (5 * std::mem::size_of::<f32>()) as GLint, 
+                (3 * mem::size_of::<f32>()) as *const gl::types::GLvoid,
             );
+            
         }
     }
 
@@ -284,4 +296,83 @@ impl Uniform {
         Ok(Uniform { id: location})
     }
 }
+
+pub struct Texture {
+    pub id: GLuint,
+}
+
+impl Texture {
+
+    pub fn gen() -> Result<Self, String> {
+        let mut id: GLuint = 0;
+        unsafe { gl::GenTextures(1, &mut id); }
+        Ok(Texture { id })
+    }
+
+    pub fn setup(&self, image_path: &str) {
+        self.set_params();
+        self.load_image_file(image_path).unwrap();
+    }
+
+    pub fn bind(&self) {
+        unsafe { gl::BindTexture(gl::TEXTURE_2D, self.id); }
+    }
+
+    pub fn unbind(&self) {
+        unsafe { gl::BindTexture(gl::TEXTURE_2D, 0); }
+    }
+
+    fn set_params(&self) {
+        unsafe {
+            gl::BindTexture(gl::TEXTURE_2D, self.id);
+            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::MIRRORED_REPEAT as GLint);
+            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::MIRRORED_REPEAT as GLint);
+            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR_MIPMAP_LINEAR as GLint);
+            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint);
+            gl::BindTexture(gl::TEXTURE_2D, 0); 
+        }
+    }
+
+    fn load_image_file(&self, filepath: &str) -> Result<(), String> {
+        let img = match image::open(filepath) {
+            Ok(img) => img.to_rgb8(),
+            Err(e) => return Err(format!("Failed to load image: {}", e)),
+        };
+
+        let (width, height) = img.dimensions();
+        let data = img.into_raw();
+
+        println!("Loaded texture dimensions: {}x{}", width, height);
+
+        unsafe {
+            gl::BindTexture(gl::TEXTURE_2D, self.id);
+            gl::TexImage2D(
+                gl::TEXTURE_2D,
+                0,
+                gl::RGB as GLint,
+                width as GLsizei,
+                height as GLsizei,
+                0,
+                gl::RGB,
+                gl::UNSIGNED_BYTE,
+                data.as_ptr() as *const c_void,
+            );
+            gl::GenerateMipmap(gl::TEXTURE_2D);
+            gl::BindTexture(gl::TEXTURE_2D, 0);
+        }
+        Ok(())
+    }
+
+}
+
+fn check_gl_error() {
+    unsafe {
+        let error = gl::GetError();
+        if error != gl::NO_ERROR {
+            eprintln!("OpenGL error: {}", error);
+            panic!("OpenGL error occurred!");
+        }
+    }
+}
+
 

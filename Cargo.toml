@@ -6,3 +6,4 @@ edition = "2021"
 [dependencies]
 gl = '*'
 sdl2 = { version = '*', features = ["bundled"]}
+image = "0.24"

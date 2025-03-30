@@ -1,20 +1,17 @@
 #version 330 core
 
-layout (location = 0) in vec2 Position;
+layout (location = 0) in vec3 aPosition;
+layout (location = 1) in vec2 aTexCoord;
 
-uniform vec2 u_resolution;
 uniform mat4 u_model_matrix;
 uniform mat4 u_view_matrix;
 
-void main() {
-    vec4 uv = u_view_matrix * u_model_matrix * vec4(Position, 0.0, 1.0);
+out vec2 vTexCoord;
 
-    if (u_resolution.x > u_resolution.y) {
-        uv.x *= u_resolution.y / u_resolution.x;
-    } else {
-        uv.y *= u_resolution.x / u_resolution.y;
-    }
+void main() {
+    vec4 uv = u_view_matrix * u_model_matrix * vec4(aPosition, 1.0);
 
     gl_Position = uv;
+    vTexCoord = aTexCoord;
 
 }

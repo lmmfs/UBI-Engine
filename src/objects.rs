@@ -2,7 +2,7 @@ use std::{ffi::{c_void, CStr, CString}, mem, ptr::{null, null_mut}};
 
 use gl::{types::{GLchar, GLenum, GLint, GLuint, GLsizei}, DeleteBuffers};
 
-use image::{GenericImageView, ImageResult};
+use image::{imageops, DynamicImage, GenericImageView, ImageResult};
 
 // An OpenGL Shader
 pub struct Shader {
@@ -334,10 +334,12 @@ impl Texture {
     }
 
     fn load_image_file(&self, filepath: &str) -> Result<(), String> {
-        let img = match image::open(filepath) {
+        let mut img  = match image::open(filepath) {
             Ok(img) => img.to_rgb8(),
             Err(e) => return Err(format!("Failed to load image: {}", e)),
         };
+        
+        let img = image::imageops::flip_vertical(&img);
 
         let (width, height) = img.dimensions();
         let data = img.into_raw();

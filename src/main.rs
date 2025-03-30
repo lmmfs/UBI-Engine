@@ -32,6 +32,9 @@ fn main() {
     let texture: Texture = Texture::gen().unwrap();
     texture.setup("assets/wall.jpg");
 
+    let texture2: Texture = Texture::gen().unwrap();
+    texture2.setup("assets/awesomeface.png");
+
     let mut model_matrix: Mat4 = Mat4::new();
     let mut view_matrix: Mat4 = Mat4::new();
 
@@ -39,6 +42,7 @@ fn main() {
     let u_model = Uniform::new(program.id(), "u_model_matrix").unwrap();
     let u_view = Uniform::new(program.id(), "u_view_matrix").unwrap();
     let u_texture = Uniform::new(program.id(), "u_texture").unwrap();
+    let u_texture2 = Uniform::new(program.id(), "u_texture2").unwrap();
 
     unsafe { 
         gl::Uniform1f(u_time.id, 0.0);
@@ -71,6 +75,9 @@ fn main() {
             gl::ActiveTexture(gl::TEXTURE0);
             texture.bind();
             gl::Uniform1i(u_texture.id, 0);
+            gl::ActiveTexture(gl::TEXTURE1);
+            texture2.bind();
+            gl::Uniform1i(u_texture2.id, 1);
 
             (vertices, indices) = gem_triangle();
             vbo.set(&vertices);

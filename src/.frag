@@ -7,6 +7,7 @@ out vec4 Color;
 uniform float u_time;
 
 uniform sampler2D u_texture;
+uniform sampler2D u_texture2;
 
 void main() {
     float sun_lifetime = mod(u_time, 6.0);
@@ -16,5 +17,5 @@ void main() {
         1.0 - sun_lifetime / 6.0, 
         1.0
     );
-    Color = texture(u_texture, vTexCoord) * Color;
+    Color = texture(u_texture, vTexCoord) * texture(u_texture2, vTexCoord) * Color;
 }

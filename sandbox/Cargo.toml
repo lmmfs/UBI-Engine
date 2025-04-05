@@ -1,9 +1,9 @@
 [package]
-name = "ubi"
+name = "sandbox"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-gl = '*'
+ubi = { path = "../" }
 sdl2 = { version = '*', features = ["bundled"]}
-image = "0.24"
+gl = '*'

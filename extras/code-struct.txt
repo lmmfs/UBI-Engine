@@ -1,0 +1,191 @@
+engine/
+├── src/
+│   ├── lib.rs         # Engine library root
+│   ├── core/          # Core engine systems (ECS, resource management, etc.)
+│   │   ├── mod.rs
+│   │   ├── ecs/
+│   │   │   ├── mod.rs
+│   │   │   ├── entity.rs
+│   │   │   ├── component.rs
+│   │   │   └── system.rs
+│   │   ├── resource/
+│   │   │   ├── mod.rs
+│   │   │   ├── manager.rs
+│   │   │   ├── loader.rs
+│   │   │   ├── cache.rs
+│   │   │   ├── handle.rs
+│   │   │   ├── asset_types/
+│   │   │   │   ├── mod.rs
+│   │   │   │   ├── model.rs
+│   │   │   │   ├── texture.rs
+│   │   │   │   ├── shader.rs
+│   │   │   │   └── sound.rs
+│   │   ├── input/
+│   │   │   ├── mod.rs
+│   │   │   ├── events.rs
+│   │   │   └── input_handler.rs
+│   │   ├── time/
+│   │   │   ├── mod.rs
+│   │   │   └── clock.rs
+│   │   ├── scene/
+│   │   │   ├── mod.rs
+│   │   │   ├── scene_graph.rs  # Or spatial partitioning structure
+│   │   │   └── entity_node.rs
+│   │   ├── math/            # Basic math utilities
+│   │   │   ├── mod.rs
+│   │   │   ├── vector.rs
+│   │   │   ├── matrix.rs
+│   │   │   ├── quaternion.rs
+│   │   │   └── transform.rs
+│   ├── graphics/        # Rendering-related modules
+│   │   ├── mod.rs
+│   │   ├── renderer/
+│   │   │   ├── mod.rs
+│   │   │   ├── forward_renderer.rs # Or deferred_renderer.rs
+│   │   │   ├── render_context.rs
+│   │   │   └── render_command.rs
+│   │   ├── shader/
+│   │   │   ├── mod.rs
+│   │   │   ├── shader_program.rs
+│   │   │   └── shader_source.rs
+│   │   ├── texture/
+│   │   │   ├── mod.rs
+│   │   │   ├── texture_2d.rs
+│   │   │   └── texture_cube.rs
+│   │   ├── model/
+│   │   │   ├── mod.rs
+│   │   │   ├── mesh.rs
+│   │   │   ├── material.rs
+│   │   │   ├── animation.rs
+│   │   │   └── model_loader.rs # Specific loader for glTF, etc.
+│   │   ├── camera/
+│   │   │   ├── mod.rs
+│   │   │   ├── camera.rs
+│   │   │   └── third_person_camera.rs
+│   │   └── opengl/          # OpenGL wrapper or utilities
+│   │       ├── mod.rs
+│   │       ├── buffer.rs
+│   │       ├── vertex_array.rs
+│   │       └── utils.rs
+│   ├── physics/         # Physics engine integration (if using a library)
+│   │   ├── mod.rs
+│   │   ├── physics_world.rs
+│   │   ├── collider.rs
+│   │   ├── rigidbody.rs
+│   │   └── integration.rs  # Glue code for your chosen physics library
+│   ├── audio/           # Audio engine
+│   │   ├── mod.rs
+│   │   ├── audio_manager.rs
+│   │   ├── sound.rs
+│   │   └── sound_source.rs
+│   ├── game/            # Placeholder for game-specific logic (can be moved to a separate crate later)
+│   │   ├── mod.rs
+│   │   ├── components/
+│   │   │   ├── mod.rs
+│   │   │   ├── transform.rs   # Game-specific transform (can extend core)
+│   │   │   ├── player.rs
+│   │   │   ├── health.rs
+│   │   │   ├── weapon.rs
+│   │   │   └── ai.rs
+│   │   ├── systems/
+│   │   │   ├── mod.rs
+│   │   │   ├── player_movement.rs
+│   │   │   ├── combat.rs
+│   │   │   ├── ai_system.rs
+│   │   │   └── rendering_system.rs # ECS system for rendering
+│   │   └── resources/
+│   │       ├── mod.rs
+│   │       └── game_settings.rs
+│   └── utils/          # General utility modules
+│       ├── mod.rs
+│       └── macros.rs
+├── Cargo.toml
+└── README.md
+
+
+src/lib.rs: This is the root of your engine library. It will likely contain the main engine struct, initialization logic for SDL2 and OpenGL, and potentially the main game loop orchestration. It will also mod declare all the submodules.
+
+core/: Contains fundamental engine systems that are generally game-agnostic.
+
+ecs/: Implements the Entity Component System.
+entity.rs: Defines the Entity type (likely a simple ID).
+component.rs: Defines the Component trait and potentially some common component types.
+system.rs: Defines the System trait and the logic for running systems on entities.
+resource/: Manages loading, caching, and accessing game assets.
+manager.rs: The central resource manager.
+loader.rs: Handles the actual loading of assets from disk.
+cache.rs: Stores loaded assets in memory.
+handle.rs: A lightweight handle or reference to a loaded asset.
+asset_types/: Submodules for specific asset types.
+model.rs, texture.rs, shader.rs, sound.rs: Define the data structures for each asset type and potentially loading logic specific to those types.
+input/: Handles input events from SDL2.
+events.rs: Defines the structure for input events (keyboard presses, mouse movements, etc.).
+input_handler.rs: Processes SDL2 events and translates them into engine-specific input events.
+time/: Provides time-related utilities.
+clock.rs: Manages game time, delta time, etc.
+scene/: Organizes the game world.
+scene_graph.rs: Implementation of a scene graph or other spatial partitioning structure (like a BVH or potentially a simplified grid for early stages).
+entity_node.rs: Represents a node in the scene graph, linking entities to their spatial representation.
+math/: Contains basic mathematical structures and functions.
+vector.rs, matrix.rs, quaternion.rs, transform.rs: Implement common math types used throughout the engine.
+graphics/: Deals with all rendering aspects using OpenGL.
+
+renderer/: High-level rendering logic.
+forward_renderer.rs: Implementation of a forward rendering pipeline.
+render_context.rs: Holds the OpenGL context and related state.
+render_command.rs: Defines commands that the renderer can execute (e.g., draw mesh, set shader).
+shader/: Manages shader loading and programs.
+shader_program.rs: Represents a compiled shader program.
+shader_source.rs: Stores the source code of shaders.
+texture/: Handles texture loading and management.
+texture_2d.rs, texture_cube.rs: Implement different types of textures.
+model/: Defines model data structures and loading.
+mesh.rs: Represents a mesh (vertices, indices, etc.).
+material.rs: Defines material properties (textures, colors, etc.).
+animation.rs: Handles animation data and playback.
+model_loader.rs: Logic for loading specific model formats (e.g., glTF).
+camera/: Implements different camera types.
+camera.rs: Base camera functionality.
+third_person_camera.rs: Specific logic for a third-person camera.
+opengl/: Low-level wrappers around OpenGL calls to provide a safer and more Rusty interface.
+buffer.rs: Manages OpenGL buffer objects (VBOs, EBOs).
+vertex_array.rs: Manages OpenGL vertex array objects (VAOs).
+utils.rs: Helper functions for OpenGL operations.
+physics/: If you integrate a physics library, this module will contain the necessary wrappers and integration logic.
+
+audio/: Handles audio loading and playback.
+
+game/: This module is intended to hold the specific logic for your third-person shooter. You might eventually move this into a separate crate if you want a cleaner separation between the engine and the game.
+
+components/: Game-specific components (e.g., player stats, weapon information, AI state).
+systems/: Game-specific ECS systems (e.g., player movement logic, combat mechanics, AI behavior, the system that ties rendering components to the graphics renderer).
+resources/: Game-specific global resources (e.g., game settings, level data).
+utils/: General utility functions and macros that don't fit into other categories.
+
+
+
+
+engine/src/core/mod.rs would look something like this:
+
+pub mod ecs;
+pub mod resource;
+pub mod input;
+pub mod time;
+pub mod scene;
+pub mod math;
+
+And engine/src/core/resource/mod.rs:
+
+pub mod manager;
+pub mod loader;
+pub mod cache;
+pub mod handle;
+pub mod asset_types;
+
+
+
+Start with the Core: Focus on setting up the basic structure in src/lib.rs, initializing SDL2 and OpenGL.
+Implement Basic Rendering: Get a simple shape rendering on the screen using the graphics/ modules.
+Input Handling: Implement basic input processing using the core/input/ module.
+ECS Foundation: Begin building the fundamental components of your ECS in core/ecs/.
+Iterate and Expand: Gradually add more modules and functionality as needed.

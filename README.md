@@ -1,7 +1,7 @@
 
-# Rusty-Sdl2
+# UBI Game Engine
 
-A skelleton of an appiclation that uses opengl in a sdl2 window
+A rust game engine that uses opengl in a sdl2 window
 
 
 
@@ -22,21 +22,30 @@ Ubuntu
 Clone the project
 
 ```bash
-  git clone https://github.com/lmmfs/rust-opengl-sdl2
+  git clone https://github.com/lmmfs/UBI-Engine.git
 ```
 
 Go to the project directory
 
 ```bash
-  cd rust-opengl-sdl2
+  cd UBI-Engine
 ```
 
-Run the application
+Build the ubi engine library
+
+```bash
+  cargo build -p ubi
+```
+
+Run the sandbox
+
+```bash
+  cd sandbox
+```
 
 ```bash
   cargo run
 ```
-
 
 ## Rust crates
 
@@ -54,8 +63,12 @@ Run the application
 
 - Logging
 
+- Event System
+
 - ECS style system
 
-- Data manager
+- Data and Resource manager
+
+- Basic 3d renderer
 
 - Engine scenes

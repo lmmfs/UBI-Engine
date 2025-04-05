@@ -1,0 +1,75 @@
+ECS System
+
+struct Entity {
+    u32 bounds_index;
+    u32 character_index;
+    u32 renderable_index;
+    u32 scriptable_index;
+}
+
+vec!<Entity> all_enteties
+vec!<Bounds> all_bounds
+vec!<Character> all_characters
+vec!<Rendable> all_rendable
+vec!<Script> all_scripts
+
+let entity := Entity::new().add_mesh().add_script()
+
+
+#################################################################33
+pub struct EntityManager {
+    pub entities: Vec<Entity>,
+    pub bounds: Vec<Bounds>,
+    pub characters: Vec<Character>,
+    pub renderables: Vec<Renderable>,
+    pub scripts: Vec<Script>,
+}
+
+impl EntityManager {
+    pub fn create_entity(&mut self) -> EntityBuilder {
+        EntityBuilder::new(self)
+    }
+    // ... methods to access components ...
+}
+
+pub struct EntityBuilder<'a> {
+    entity: Entity,
+    entity_manager: &'a mut EntityManager,
+}
+
+impl<'a> EntityBuilder<'a> {
+    pub fn new(entity_manager: &'a mut EntityManager) -> Self {
+        EntityBuilder { entity: Entity::default(), entity_manager }
+    }
+
+    pub fn add_bounds(mut self, bounds_data: Bounds) -> Self {
+        if let Some(index) = self.entity.bounds_index {
+            self.entity_manager.bounds[index] = bounds_data;
+        } else {
+            let index = self.entity_manager.bounds.len();
+            self.entity_manager.bounds.push(bounds_data);
+            self.entity.bounds_index = Some(index);
+        }
+        self
+    }
+
+    // ... other add_component methods ...
+
+    pub fn build(self) -> Entity {
+        let entity = self.entity;
+        self.entity_manager.entities.push(entity);
+        entity
+    }
+}
+
+fn main() {
+    let mut entity_manager = EntityManager::default();
+
+    let entity1 = entity_manager.create_entity()
+        .add_bounds(Bounds { min: [0.0; 3], max: [1.0; 3] })
+        .add_renderable(Renderable { mesh_id: 1, texture_id: 2 })
+        .build();
+
+    println!("Entity 1: {:?}", entity1);
+    println!("All Bounds: {:?}", entity_manager.bounds);
+}

@@ -114,8 +114,8 @@ fn create_whitspace_cstring_with_len(len: usize) -> CString {
 }
 
 pub fn create_program() -> Result<Program, &'static str> {
-    let vert_shader = Shader::from_source(&CString::new(include_str!(".vert")).unwrap(), gl::VERTEX_SHADER).unwrap(); 
-    let frag_shader = Shader::from_source(&CString::new(include_str!(".frag")).unwrap(), gl::FRAGMENT_SHADER).unwrap();
+    let vert_shader = Shader::from_source(&CString::new(include_str!("../../assets/shaders/.vert")).unwrap(), gl::VERTEX_SHADER).unwrap(); 
+    let frag_shader = Shader::from_source(&CString::new(include_str!("../../assets/shaders/.frag")).unwrap(), gl::FRAGMENT_SHADER).unwrap();
     check_gl_error();
     let shader_program = Program::from_shaders(&[vert_shader, frag_shader]).unwrap();
 

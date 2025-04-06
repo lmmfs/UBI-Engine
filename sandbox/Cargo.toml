@@ -2,8 +2,10 @@
 name = "sandbox"
 version = "0.1.0"
 edition = "2021"
+publish = false
 
 [dependencies]
 ubi = { path = "../" }
 sdl2 = { version = '*', features = ["bundled"]}
 gl = '*'
+log = "0.4.27"

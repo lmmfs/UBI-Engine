@@ -1,4 +1,5 @@
 use sdl2::{video::{gl_attr, GLContext, SwapInterval, Window}, EventPump, Sdl};
+use crate::ubiinfo;
 
 
 pub struct Windsdl {

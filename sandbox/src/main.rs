@@ -2,17 +2,29 @@ use std::time::Instant;
 
 use sdl2::event::{Event, WindowEvent};
 
+/* 
 use ubi::core::math::transform::*;
 use ubi::graphics::windsdl::Windsdl;
 use ubi::graphics::objects::*;
 use ubi::core::custom_error::UbiError;
+*/
+
+use ubi::prelude::*;
 
 fn main() {
     ubi::core::logger::init();
-    test_error();
+    //test_error();
+    engine_loop();
 }
 
-/* 
+fn test_error() -> Result<(), UbiError> {
+    ubi::core::logger::info!("Error");
+    appinfo!("rrrrr");
+    apperror!("rrrrr");
+    return Err(UbiError::Other(String::from("eeeee")))
+}
+
+
 fn engine_loop() {
     let mut windsdl = Windsdl::new(800, 600).unwrap();
     unsafe { gl::Viewport(0, 0, 800, 600) }
@@ -103,7 +115,7 @@ fn engine_loop() {
         windsdl.window.gl_swap_window();
     }
 }
-*/
+
 
 fn gem_triangle() -> (Vec<f32>, Vec<u32>) {
     //vertice: x, y, z,  uv.x, uv.y 
@@ -120,7 +132,3 @@ fn gem_triangle() -> (Vec<f32>, Vec<u32>) {
     (vertices, indices)
 }
 
-fn test_error() -> Result<(), UbiError> {
-    ubi::core::logger::info!("Error");
-    return Err(UbiError::Other(String::from("eeeee")))
-}

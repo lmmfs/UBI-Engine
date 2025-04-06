@@ -1,8 +1,7 @@
-
 pub mod core;
-pub mod graphics;
 pub mod event;
-pub mod prelude; 
+pub mod graphics;
+pub mod prelude;
 
 #[macro_use]
 pub mod macros;

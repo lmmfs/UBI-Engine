@@ -1,6 +1,13 @@
-use std::{ffi::{c_void, CStr, CString}, mem, ptr::{null, null_mut}};
+use std::{
+    ffi::{c_void, CStr, CString},
+    mem,
+    ptr::{null, null_mut},
+};
 
-use gl::{types::{GLchar, GLenum, GLint, GLuint, GLsizei}, DeleteBuffers};
+use gl::{
+    types::{GLchar, GLenum, GLint, GLsizei, GLuint},
+    DeleteBuffers,
+};
 
 use image::{imageops, DynamicImage, GenericImageView, ImageResult};
 
@@ -19,16 +26,20 @@ impl Shader {
         }
 
         let mut success: GLint = 1;
-        unsafe { gl::GetShaderiv(id, gl::COMPILE_STATUS, &mut success); }
+        unsafe {
+            gl::GetShaderiv(id, gl::COMPILE_STATUS, &mut success);
+        }
 
         // check if shader return error
         if success == 0 {
             let mut len: GLint = 0;
-            unsafe { gl::GetShaderiv(id, gl::INFO_LOG_LENGTH, &mut len); }
+            unsafe {
+                gl::GetShaderiv(id, gl::INFO_LOG_LENGTH, &mut len);
+            }
 
             let error = create_whitspace_cstring_with_len(len as usize);
 
-            unsafe { 
+            unsafe {
                 gl::GetShaderInfoLog(id, len, null_mut(), error.as_ptr() as *mut GLchar);
             }
 
@@ -45,7 +56,9 @@ impl Shader {
 
 impl Drop for Shader {
     fn drop(&mut self) {
-        unsafe { gl::DeleteShader(self.id); }
+        unsafe {
+            gl::DeleteShader(self.id);
+        }
     }
 }
 
@@ -59,22 +72,30 @@ impl Program {
         let id = unsafe { gl::CreateProgram() };
 
         for shader in shaders {
-            unsafe { gl::AttachShader(id, shader.id()); }
+            unsafe {
+                gl::AttachShader(id, shader.id());
+            }
         }
 
-        unsafe { gl::LinkProgram(id); }
+        unsafe {
+            gl::LinkProgram(id);
+        }
 
         let mut success: GLint = 1;
-        unsafe { gl::GetProgramiv(id, gl::COMPILE_STATUS, &mut success); }
+        unsafe {
+            gl::GetProgramiv(id, gl::COMPILE_STATUS, &mut success);
+        }
 
         // check if program return error
         if success == 0 {
             let mut len: GLint = 0;
-            unsafe { gl::GetProgramiv(id, gl::INFO_LOG_LENGTH, &mut len); }
+            unsafe {
+                gl::GetProgramiv(id, gl::INFO_LOG_LENGTH, &mut len);
+            }
 
             let error = create_whitspace_cstring_with_len(len as usize);
 
-            unsafe { 
+            unsafe {
                 gl::GetProgramInfoLog(id, len, null_mut(), error.as_ptr() as *mut GLchar);
             }
 
@@ -88,11 +109,12 @@ impl Program {
         }
 
         Ok(Program { id })
-
     }
 
     pub fn set(&self) {
-        unsafe { gl::UseProgram(self.id);}
+        unsafe {
+            gl::UseProgram(self.id);
+        }
     }
 
     pub fn id(&self) -> u32 {
@@ -100,10 +122,11 @@ impl Program {
     }
 }
 
-
 impl Drop for Program {
     fn drop(&mut self) {
-        unsafe { gl::DeleteProgram(self.id); }
+        unsafe {
+            gl::DeleteProgram(self.id);
+        }
     }
 }
 
@@ -114,8 +137,16 @@ fn create_whitspace_cstring_with_len(len: usize) -> CString {
 }
 
 pub fn create_program() -> Result<Program, &'static str> {
-    let vert_shader = Shader::from_source(&CString::new(include_str!("../../assets/shaders/.vert")).unwrap(), gl::VERTEX_SHADER).unwrap(); 
-    let frag_shader = Shader::from_source(&CString::new(include_str!("../../assets/shaders/.frag")).unwrap(), gl::FRAGMENT_SHADER).unwrap();
+    let vert_shader = Shader::from_source(
+        &CString::new(include_str!("../../assets/shaders/.vert")).unwrap(),
+        gl::VERTEX_SHADER,
+    )
+    .unwrap();
+    let frag_shader = Shader::from_source(
+        &CString::new(include_str!("../../assets/shaders/.frag")).unwrap(),
+        gl::FRAGMENT_SHADER,
+    )
+    .unwrap();
     check_gl_error();
     let shader_program = Program::from_shaders(&[vert_shader, frag_shader]).unwrap();
 
@@ -130,7 +161,9 @@ pub struct Vbo {
 impl Vbo {
     pub fn gen() -> Self {
         let mut id: GLuint = 0;
-        unsafe { gl::GenBuffers(1, &mut id); }
+        unsafe {
+            gl::GenBuffers(1, &mut id);
+        }
         Vbo { id }
     }
 
@@ -145,7 +178,7 @@ impl Vbo {
                 gl::ARRAY_BUFFER,
                 (vertices.len() * std::mem::size_of::<f32>()) as gl::types::GLsizeiptr,
                 vertices.as_ptr() as *const gl::types::GLvoid,
-                gl::STATIC_DRAW
+                gl::STATIC_DRAW,
             );
         }
     }
@@ -170,7 +203,6 @@ impl Drop for Vbo {
     }
 }
 
-
 // OpenGL Index Buffer Obejct
 pub struct Ibo {
     id: GLuint,
@@ -179,7 +211,9 @@ pub struct Ibo {
 impl Ibo {
     pub fn gen() -> Self {
         let mut id: GLuint = 0;
-        unsafe { gl::GenBuffers(1, &mut id); }
+        unsafe {
+            gl::GenBuffers(1, &mut id);
+        }
         Ibo { id }
     }
 
@@ -194,7 +228,7 @@ impl Ibo {
                 gl::ELEMENT_ARRAY_BUFFER,
                 (indices.len() * std::mem::size_of::<u32>()) as gl::types::GLsizeiptr,
                 indices.as_ptr() as *const gl::types::GLvoid,
-                gl::DYNAMIC_DRAW
+                gl::DYNAMIC_DRAW,
             );
         }
     }
@@ -219,7 +253,6 @@ impl Drop for Ibo {
     }
 }
 
-
 pub struct Vao {
     id: GLuint,
 }
@@ -227,7 +260,9 @@ pub struct Vao {
 impl Vao {
     pub fn gen() -> Self {
         let mut id: GLuint = 0;
-        unsafe { gl::GenVertexArrays(1, &mut id); }
+        unsafe {
+            gl::GenVertexArrays(1, &mut id);
+        }
         Vao { id }
     }
 
@@ -238,25 +273,24 @@ impl Vao {
 
     fn setup(&self) {
         unsafe {
-           gl::EnableVertexAttribArray(0);
-           gl::VertexAttribPointer(
-                0, 
-                3, 
-                gl::FLOAT, 
-                gl::FALSE, 
-                (5 * std::mem::size_of::<f32>()) as GLint, 
-                null()
+            gl::EnableVertexAttribArray(0);
+            gl::VertexAttribPointer(
+                0,
+                3,
+                gl::FLOAT,
+                gl::FALSE,
+                (5 * std::mem::size_of::<f32>()) as GLint,
+                null(),
             );
             gl::EnableVertexAttribArray(1);
             gl::VertexAttribPointer(
-                1, 
-                2, 
-                gl::FLOAT, 
-                gl::FALSE, 
-                (5 * std::mem::size_of::<f32>()) as GLint, 
+                1,
+                2,
+                gl::FLOAT,
+                gl::FALSE,
+                (5 * std::mem::size_of::<f32>()) as GLint,
                 (3 * mem::size_of::<f32>()) as *const gl::types::GLvoid,
             );
-            
         }
     }
 
@@ -293,7 +327,7 @@ impl Uniform {
             return Err(format!("Couldn't get uniform location for {}", name));
         }
 
-        Ok(Uniform { id: location})
+        Ok(Uniform { id: location })
     }
 }
 
@@ -302,10 +336,11 @@ pub struct Texture {
 }
 
 impl Texture {
-
     pub fn gen() -> Result<Self, String> {
         let mut id: GLuint = 0;
-        unsafe { gl::GenTextures(1, &mut id); }
+        unsafe {
+            gl::GenTextures(1, &mut id);
+        }
         Ok(Texture { id })
     }
 
@@ -315,30 +350,46 @@ impl Texture {
     }
 
     pub fn bind(&self) {
-        unsafe { gl::BindTexture(gl::TEXTURE_2D, self.id); }
+        unsafe {
+            gl::BindTexture(gl::TEXTURE_2D, self.id);
+        }
     }
 
     pub fn unbind(&self) {
-        unsafe { gl::BindTexture(gl::TEXTURE_2D, 0); }
+        unsafe {
+            gl::BindTexture(gl::TEXTURE_2D, 0);
+        }
     }
 
     fn set_params(&self) {
         unsafe {
             gl::BindTexture(gl::TEXTURE_2D, self.id);
-            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::MIRRORED_REPEAT as GLint);
-            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::MIRRORED_REPEAT as GLint);
-            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR_MIPMAP_LINEAR as GLint);
+            gl::TexParameteri(
+                gl::TEXTURE_2D,
+                gl::TEXTURE_WRAP_S,
+                gl::MIRRORED_REPEAT as GLint,
+            );
+            gl::TexParameteri(
+                gl::TEXTURE_2D,
+                gl::TEXTURE_WRAP_T,
+                gl::MIRRORED_REPEAT as GLint,
+            );
+            gl::TexParameteri(
+                gl::TEXTURE_2D,
+                gl::TEXTURE_MIN_FILTER,
+                gl::LINEAR_MIPMAP_LINEAR as GLint,
+            );
             gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as GLint);
-            gl::BindTexture(gl::TEXTURE_2D, 0); 
+            gl::BindTexture(gl::TEXTURE_2D, 0);
         }
     }
 
     fn load_image_file(&self, filepath: &str) -> Result<(), String> {
-        let mut img  = match image::open(filepath) {
+        let mut img = match image::open(filepath) {
             Ok(img) => img.to_rgb8(),
             Err(e) => return Err(format!("Failed to load image: {}", e)),
         };
-        
+
         let img = image::imageops::flip_vertical(&img);
 
         let (width, height) = img.dimensions();
@@ -364,7 +415,6 @@ impl Texture {
         }
         Ok(())
     }
-
 }
 
 fn check_gl_error() {
@@ -376,5 +426,3 @@ fn check_gl_error() {
         }
     }
 }
-
-

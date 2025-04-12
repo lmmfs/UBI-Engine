@@ -4,6 +4,8 @@ use sdl2::{
     EventPump, Sdl,
 };
 
+use crate::event::application_event::*;
+
 pub struct Windsdl {
     pub sdl: Sdl,
     pub window: Window,
@@ -62,10 +64,50 @@ impl crate::graphics::window::window_trait::Window for Windsdl {
     }
 
     fn get_size(&self) -> (u32, u32) {
-        todo!()
+        self.window.size()
     }
 
     fn swap_buffers(&self) {
         self.window.gl_swap_window()
+    }
+    
+    fn poll_events(&mut self) -> Vec<Box<dyn crate::event::event::Event>> {
+        let mut events: Vec<Box<dyn crate::event::event::Event>> = Vec::new();
+        for event in self.event_pump.poll_iter() {
+            match event {
+                sdl2::event::Event::Quit { .. } => {
+                    events.push(Box::new(WindowCloseEvent::new()));
+                }
+
+                sdl2::event::Event::Window { win_event, .. } => {
+                    match win_event {
+                        sdl2::event::WindowEvent::Resized(width, height) => {
+                            events.push(Box::new(WindowResizeEvent::new(width, height)));
+                        }
+                        _ => {}
+                    }
+                }
+                _ => {}
+            }
+        }
+        events
+    }
+    
+    fn clear(&self) {
+       // self.window.gl_clear_color(0.0, 0.0, 0.0, 1.0);
+        //self.window.gl_clear(sdl2::video::GL_COLOR_BUFFER_BIT);
+        unsafe {
+            gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
+            gl::ClearColor(1.0, 0.0, 0.0, 1.0);
+        }
+        //self.gl.ClearColor(0.0, 0.0, 0.0, 1.0);
+    }
+    
+    fn resize(&self, width: i32, height: i32) {
+        ubiinfo!("Resizing window to {}x{}", width, height);
+        unsafe {
+            gl::Viewport(0, 0, width, height);
+        }
+        //gl::Viewport(0, 0, width, height);
     }
 }

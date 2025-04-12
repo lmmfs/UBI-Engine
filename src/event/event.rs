@@ -27,6 +27,24 @@ pub enum EventType {
     WindowMoved,
 }
 
+impl fmt::Display for EventType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+       match self {
+            EventType::KeyPressed => write!(f, "KeyPressed"),
+            EventType::KeyReleased => write!(f, "KeyReleased"),
+            EventType::MouseMoved => write!(f, "MouseMoved"),
+            EventType::MouseScroll => write!(f, "MouseScroll"),
+            EventType::MouseButtonPressed => write!(f, "MouseButtonPressed"),
+            EventType::MouseButtonReleased => write!(f, "MouseButtonReleased"),
+            EventType::WindowClose => write!(f, "WindowClose"),
+            EventType::WindowResize => write!(f, "WindowResize"),
+            EventType::WindowFocus => write!(f, "WindowFocus"),
+            EventType::WindowLostFocus => write!(f, "WindowLostFocus"),
+            EventType::WindowMoved => write!(f, "WindowMoved"), 
+       }
+    }
+}
+
 pub trait Event: fmt::Debug + Any {
     fn event_type(&self) -> EventType;
     fn static_event_type() -> EventType
@@ -42,12 +60,12 @@ pub trait Event: fmt::Debug + Any {
     fn as_any(&mut self) -> &mut dyn Any;
 }
 
-pub struct EventDispatcher<'a> {
-    event: &'a mut dyn Event,
+pub struct EventDispatcher {
+    event: Box<dyn Event>,
 }
 
-impl<'a> EventDispatcher<'a> {
-    pub fn new(event: &'a mut dyn Event) -> Self {
+impl EventDispatcher {
+    pub fn new(event: Box<dyn Event>) -> Self {
         Self { event }
     }
 

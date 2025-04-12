@@ -1,6 +1,6 @@
 // Core modules
 pub use crate::core::math::transform::*;
-// pub use crate::core::application::App;
+pub use crate::core::application::application::Application;
 pub use crate::appdebug;
 pub use crate::apperror;
 pub use crate::appinfo;
@@ -12,6 +12,7 @@ pub use crate::core::logger::init as init_logger;
 // Graphics modules
 pub use crate::graphics::objects::*;
 pub use crate::graphics::windsdl::Windsdl;
+pub use crate::graphics::window::window_trait::{Window, WindowData};
 
 /*
 use ubi::core::math::transform::*;

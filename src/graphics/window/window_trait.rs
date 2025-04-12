@@ -9,7 +9,8 @@ pub trait Window {
     where
         Self: Sized;
     fn get_size(&self) -> (u32, u32);
-    //fn poll_events(&self) -> Vec<crate::event::Event>; // Assuming you have an Event type
+    fn poll_events(&mut self) -> Vec<Box<dyn crate::event::event::Event>>;
     fn swap_buffers(&self);
-    // ... other window-related methods
+    fn clear(&self);
+    fn resize(&self, width: i32, height: i32);
 }

@@ -11,8 +11,8 @@ pub use crate::core::logger::init as init_logger;
 
 // Graphics modules
 pub use crate::graphics::objects::*;
-pub use crate::graphics::windsdl::Windsdl;
-pub use crate::graphics::window::window_trait::{Window, WindowData};
+pub use crate::window::windsdl::Windsdl;
+pub use crate::window::window_trait::{Window, WindowData};
 
 /*
 use ubi::core::math::transform::*;

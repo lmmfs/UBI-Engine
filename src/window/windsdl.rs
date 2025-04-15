@@ -14,8 +14,8 @@ pub struct Windsdl {
     pub event_pump: EventPump,
 }
 
-impl crate::graphics::window::window_trait::Window for Windsdl {
-    fn create(window_data: super::window::window_trait::WindowData) -> Result<Self, String>
+impl crate::window::window_trait::Window for Windsdl {
+    fn create(window_data: crate::window::window_trait::WindowData) -> Result<Self, String>
     where
         Self: Sized,
     {

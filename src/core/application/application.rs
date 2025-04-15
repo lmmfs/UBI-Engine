@@ -1,4 +1,4 @@
-use crate::graphics::window::window_trait::Window;
+use crate::window::window_trait::Window;
 use crate::event::{event::Event, event::EventDispatcher, key_event::KeyPressedEvent};
 use crate::event::application_event::*;
 

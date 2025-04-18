@@ -1,6 +1,6 @@
 use crate::ubiinfo;
 use sdl2::{
-    video::{gl_attr, GLContext, SwapInterval, Window},
+    video::{GLContext, SwapInterval, Window},
     EventPump, Sdl,
 };
 

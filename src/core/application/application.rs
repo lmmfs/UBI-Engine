@@ -2,7 +2,7 @@ use crate::ubiinfo;
 use crate::core::logger::init;
 use crate::window::window_trait::{Window, WindowData};
 use crate::window::windsdl::Windsdl;
-use crate::event::{event::Event, event::EventDispatcher, key_event::KeyPressedEvent};
+use crate::event::{event::EventDispatcher, key_event::KeyPressedEvent};
 use crate::event::application_event::*;
 
 pub struct Application<W: Window> {
@@ -10,7 +10,8 @@ pub struct Application<W: Window> {
     running: bool,
 }
 
-impl Application<Windsdl> { // Implement the specific SDL2 constructor
+// Specific SDL2 window 
+impl Application<Windsdl> { 
     pub fn with_sdl2(window_data: WindowData) -> Self {
         init();
         let window = Windsdl::create(window_data).unwrap();

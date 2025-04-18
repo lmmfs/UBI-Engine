@@ -45,7 +45,7 @@ impl fmt::Display for EventType {
     }
 }
 
-pub trait Event: fmt::Debug + Any {
+pub trait Event: fmt::Debug + Any + fmt::Display {
     fn event_type(&self) -> EventType;
     fn static_event_type() -> EventType
     where

@@ -1,2 +1,8 @@
-- make ubi app
-- make event system
+- finish event system
+- window events
+- break graphics/objec.rs into multiple modules
+-- texture.rs
+-- buffers.rs
+- opengl render and window
+- layers
+- gui - egui crate

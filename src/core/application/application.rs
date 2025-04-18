@@ -26,7 +26,7 @@ impl<W: Window> Application<W> {
 
                 // Example: handle key pressed
                 dispatcher.dispatch::<KeyPressedEvent, _>(|e| {
-                    println!("Key Pressed: {}", e.key_code);
+                    println!("Key Pressed: {}", e.get_key_code());
                     true // mark as handled
                 });
 
@@ -37,7 +37,7 @@ impl<W: Window> Application<W> {
                 });
 
                 dispatcher.dispatch::<WindowResizeEvent, _>(|e| {
-                    self.window.resize(e.width, e.height);
+                    self.window.resize(e.get_width(), e.get_height());
                     true
                 });
             }

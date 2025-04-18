@@ -1,4 +1,10 @@
 use super::event::{Event, EventCategory, EventType};
+use std::fmt;
+
+// This module contains event types related to application events, such as closing and resizing.
+// Events:
+// - WindowCloseEvent: Represents a request to close the application window.
+// - WindowResizeEvent: Represents a request to resize the application window.
 
 #[derive(Debug)]
 pub struct WindowCloseEvent {
@@ -42,12 +48,17 @@ impl Event for WindowCloseEvent {
     
 }
 
+impl fmt::Display for WindowCloseEvent {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "WindowCloseEvent: handled={}", self.handled)
+    }
+}
 
 
 #[derive(Debug)]
 pub struct WindowResizeEvent {
-    pub width: i32, 
-    pub height: i32,
+    width: i32, 
+    height: i32,
     handled: bool,
 }
 
@@ -58,6 +69,14 @@ impl WindowResizeEvent {
             height: height,
             handled: false 
         }
+    }
+
+    pub fn get_width(&self) -> i32 {
+        self.width
+    }
+
+    pub fn get_height(&self) -> i32 {
+        self.height
     }
 }
 
@@ -88,5 +107,12 @@ impl Event for WindowResizeEvent {
 
     fn as_any(&mut self) -> &mut dyn std::any::Any {
         self
+    }
+}
+
+impl fmt::Display for WindowResizeEvent {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "WindowCloseEvent: width={}, height={}, handled={}", 
+        self.width, self.height, self.handled)
     }
 }

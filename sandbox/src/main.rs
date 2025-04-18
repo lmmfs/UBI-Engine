@@ -6,9 +6,6 @@ fn main() {
         width: 800,
         height: 600,
     };
-
-    let windsdl = Windsdl::create(window_data).unwrap();
-    let mut app = Application::new(windsdl);
-
+    let mut app = Application::with_sdl2(window_data);
     app.run();
 }

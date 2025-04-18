@@ -1,4 +1,7 @@
-use crate::window::window_trait::Window;
+use crate::ubiinfo;
+use crate::core::logger::init;
+use crate::window::window_trait::{Window, WindowData};
+use crate::window::windsdl::Windsdl;
 use crate::event::{event::Event, event::EventDispatcher, key_event::KeyPressedEvent};
 use crate::event::application_event::*;
 
@@ -7,8 +10,20 @@ pub struct Application<W: Window> {
     running: bool,
 }
 
+impl Application<Windsdl> { // Implement the specific SDL2 constructor
+    pub fn with_sdl2(window_data: WindowData) -> Self {
+        init();
+        let window = Windsdl::create(window_data).unwrap();
+        Self {
+            window,
+            running: false,
+        }
+    }
+}
+
 impl<W: Window> Application<W> {
     pub fn new(window: W) -> Self {
+        init(); 
         Self {
             window,
             running: false,
@@ -26,17 +41,19 @@ impl<W: Window> Application<W> {
 
                 // Example: handle key pressed
                 dispatcher.dispatch::<KeyPressedEvent, _>(|e| {
-                    println!("Key Pressed: {}", e.get_key_code());
+                    ubiinfo!("{}", e);  
                     true // mark as handled
                 });
 
                 // Example: handle window close
-                dispatcher.dispatch::<WindowCloseEvent, _>(|_e| {
+                dispatcher.dispatch::<WindowCloseEvent, _>(|e| {
+                    ubiinfo!("{}", e);
                     self.running = false;
                     true
                 });
 
                 dispatcher.dispatch::<WindowResizeEvent, _>(|e| {
+                    ubiinfo!("{}", e);
                     self.window.resize(e.get_width(), e.get_height());
                     true
                 });

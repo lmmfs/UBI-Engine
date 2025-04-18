@@ -47,6 +47,8 @@ Run the sandbox
   cargo run
 ```
 
+RUST_LOG=info
+
 ## Roadmap
 
 - Logging

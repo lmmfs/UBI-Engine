@@ -1,3 +1,8 @@
 pub struct Renderer {
-    // OpenGL context, etc.
+    /*
+    program: gl::types::GLuint,
+    vao: gl::types::GLuint,
+    vbo: gl::types::GLuint,
+    gl: gl::Gl,
+    */
 }

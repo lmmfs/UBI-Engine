@@ -1,2 +1,3 @@
 pub mod window_trait;
-pub mod windsdl;
+pub mod wind_sdl;
+pub mod wind_winit;

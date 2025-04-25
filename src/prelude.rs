@@ -14,5 +14,5 @@ pub use crate::graphics::buffer::*;
 pub use crate::graphics::shader::*;
 pub use crate::graphics::texture::*;
 // Windows modules
-pub use crate::window::windsdl::Windsdl;
-pub use crate::window::window_trait::{Window, WindowData};
+pub use crate::window::wind_sdl::SdlWindow;
+pub use crate::window::window_trait::{UBIWindow, WindowData};

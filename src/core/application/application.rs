@@ -1,20 +1,20 @@
 use crate::ubiinfo;
 use crate::core::logger::init;
-use crate::window::window_trait::{Window, WindowData};
-use crate::window::windsdl::Windsdl;
-use crate::event::{event::EventDispatcher, key_event::KeyPressedEvent};
+use crate::window::window_trait::{UBIWindow, WindowData};
+use crate::window::wind_sdl::SdlWindow;
+use crate::event::{event::Event, event::EventDispatcher, key_event::KeyPressedEvent};
 use crate::event::application_event::*;
 
-pub struct Application<W: Window> {
+pub struct Application<W: UBIWindow> {
     window: W,
     running: bool,
 }
 
 // Specific SDL2 window 
-impl Application<Windsdl> { 
+impl Application<SdlWindow> { 
     pub fn with_sdl2(window_data: WindowData) -> Self {
         init();
-        let window = Windsdl::create(window_data).unwrap();
+        let window = SdlWindow::create(window_data).unwrap();
         Self {
             window,
             running: false,
@@ -22,7 +22,7 @@ impl Application<Windsdl> {
     }
 }
 
-impl<W: Window> Application<W> {
+impl<W: UBIWindow> Application<W> {
     pub fn new(window: W) -> Self {
         init(); 
         Self {
@@ -35,7 +35,7 @@ impl<W: Window> Application<W> {
         self.running = true;
 
         while self.running {
-            let events = self.window.poll_events(); // returns Vec<Box<dyn Event>>
+            let events: Vec<Box<dyn Event>> = self.window.poll_events(); // returns Vec<Box<dyn Event>>
 
             for event in events {
                 let mut dispatcher = EventDispatcher::new(event); // your custom dispatcher

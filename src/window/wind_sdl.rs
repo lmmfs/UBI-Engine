@@ -1,12 +1,14 @@
 use crate::ubiinfo;
+use crate::event::application_event::*;
+use crate::window::window_trait::{UBIWindow, WindowData};
+
 use sdl2::{
     video::{GLContext, SwapInterval, Window},
     EventPump, Sdl,
 };
 
-use crate::event::application_event::*;
 
-pub struct Windsdl {
+pub struct SdlWindow {
     pub sdl: Sdl,
     pub window: Window,
     pub gl_context: GLContext,
@@ -14,8 +16,8 @@ pub struct Windsdl {
     pub event_pump: EventPump,
 }
 
-impl crate::window::window_trait::Window for Windsdl {
-    fn create(window_data: crate::window::window_trait::WindowData) -> Result<Self, String>
+impl UBIWindow for SdlWindow {
+    fn create(window_data: WindowData) -> Result<Self, String>
     where
         Self: Sized,
     {
@@ -54,7 +56,7 @@ impl crate::window::window_trait::Window for Windsdl {
 
         let event_pump: sdl2::EventPump = sdl.event_pump().unwrap();
 
-        Ok(Windsdl {
+        Ok(SdlWindow {
             sdl,
             window,
             gl_context,
@@ -94,13 +96,10 @@ impl crate::window::window_trait::Window for Windsdl {
     }
     
     fn clear(&self) {
-       // self.window.gl_clear_color(0.0, 0.0, 0.0, 1.0);
-        //self.window.gl_clear(sdl2::video::GL_COLOR_BUFFER_BIT);
         unsafe {
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
             gl::ClearColor(1.0, 0.0, 0.0, 1.0);
         }
-        //self.gl.ClearColor(0.0, 0.0, 0.0, 1.0);
     }
     
     fn resize(&self, width: i32, height: i32) {
@@ -108,6 +107,5 @@ impl crate::window::window_trait::Window for Windsdl {
         unsafe {
             gl::Viewport(0, 0, width, height);
         }
-        //gl::Viewport(0, 0, width, height);
     }
 }

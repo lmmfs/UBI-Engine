@@ -5,7 +5,7 @@ edition = "2021"
 publish = false
 
 [dependencies]
-ubi = { path = "../" }
+ubi = { path = "../ubi" }
 sdl2 = { version = '*', features = ["bundled"]}
 gl = '*'
 log = "0.4.27"

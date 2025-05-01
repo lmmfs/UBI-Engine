@@ -131,13 +131,14 @@ fn create_whitspace_cstring_with_len(len: usize) -> CString {
 }
 
 pub fn create_program() -> Result<Program, &'static str> {
+    // TODO: change way to read shaders, pass filename
     let vert_shader = Shader::from_source(
-        &CString::new(include_str!("../../assets/shaders/.vert")).unwrap(),
+        &CString::new(include_str!("../../../assets/shaders/.vert")).unwrap(),
         gl::VERTEX_SHADER,
     )
     .unwrap();
     let frag_shader = Shader::from_source(
-        &CString::new(include_str!("../../assets/shaders/.frag")).unwrap(),
+        &CString::new(include_str!("../../../assets/shaders/.frag")).unwrap(),
         gl::FRAGMENT_SHADER,
     )
     .unwrap();

@@ -16,3 +16,5 @@ pub use crate::graphics::texture::*;
 // Windows modules
 pub use crate::window::wind_sdl::SdlWindow;
 pub use crate::window::window_trait::{UBIWindow, WindowData};
+pub use crate::layer::Layer;
+pub use crate::event::event::Event;

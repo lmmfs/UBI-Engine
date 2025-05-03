@@ -47,7 +47,11 @@ Run the sandbox
   cargo run
 ```
 
-RUST_LOG=info
+Run with logs
+
+```bash
+  RUST_LOG=info cargo run
+```
 
 ## Roadmap
 
@@ -80,21 +84,4 @@ RUST_LOG=info
 **env_logger:**
 
 **thiserror:**
-
-## Inspiration engines
-
-Bevy Engine https://bevyengine.org/
-
-Space Editor for Bevy https://github.com/rewin123/space_editor
-
-Fyrox https://fyrox.rs/
-
-Piston https://www.piston.rs/
-
-Blue Engine https://github.com/AryanpurTech/BlueEngine
-
-Notan https://github.com/Nazariglez/notan
-
-Ambient https://ambient.run/
-
 

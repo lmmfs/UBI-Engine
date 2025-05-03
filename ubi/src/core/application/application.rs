@@ -1,17 +1,17 @@
-use crate::ubiinfo;
 use crate::core::logger::init;
-use crate::window::window_trait::{UBIWindow, WindowData};
+use crate::event::event::Event;
+use crate::event::event::EventDispatcher;
+use crate::ubiinfo;
 use crate::window::wind_sdl::SdlWindow;
-use crate::event::{event::Event, event::EventDispatcher, key_event::KeyPressedEvent};
-use crate::event::application_event::*;
+use crate::window::window_trait::{UBIWindow, WindowData};
 
 pub struct Application<W: UBIWindow> {
     window: W,
     running: bool,
 }
 
-// Specific SDL2 window 
-impl Application<SdlWindow> { 
+// Specific SDL2 window
+impl Application<SdlWindow> {
     pub fn with_sdl2(window_data: WindowData) -> Self {
         init();
         let window = SdlWindow::create(window_data).unwrap();
@@ -24,7 +24,7 @@ impl Application<SdlWindow> {
 
 impl<W: UBIWindow> Application<W> {
     pub fn new(window: W) -> Self {
-        init(); 
+        init();
         Self {
             window,
             running: false,
@@ -33,39 +33,41 @@ impl<W: UBIWindow> Application<W> {
 
     pub fn run(&mut self) {
         self.running = true;
+        let mut dispatcher = EventDispatcher::new();
 
         while self.running {
-            let events: Vec<Box<dyn Event>> = self.window.poll_events(); // returns Vec<Box<dyn Event>>
+            let events: Vec<Event> = self.window.poll_events();
 
-            for event in events {
-                let mut dispatcher = EventDispatcher::new(event); // your custom dispatcher
-
-                // Example: handle key pressed
-                dispatcher.dispatch::<KeyPressedEvent, _>(|e| {
-                    ubiinfo!("{}", e);  
-                    true // mark as handled
-                });
-
-                // Example: handle window close
-                dispatcher.dispatch::<WindowCloseEvent, _>(|e| {
-                    ubiinfo!("{}", e);
-                    self.running = false;
-                    true
-                });
-
-                dispatcher.dispatch::<WindowResizeEvent, _>(|e| {
-                    ubiinfo!("{}", e);
-                    self.window.resize(e.get_width(), e.get_height());
-                    true
-                });
+            for mut event in events {
+                match &mut event {
+                    Event::WindowClose(_) => {
+                        dispatcher.dispatch(&mut event, |e| {
+                            ubiinfo!("{}", e);
+                            self.running = false;
+                            true
+                        });
+                    }
+                    Event::WindowResize(_) => {
+                        dispatcher.dispatch(&mut event, |e| {
+                            ubiinfo!("{}", e);
+                            if let Event::WindowResize(resize_data) = e {
+                                self.window.resize(resize_data.get_width(), resize_data.get_height());
+                            }
+                            true
+                        });
+                    }
+                    Event::KeyPressed(_) => {
+                        dispatcher.dispatch(&mut event, |e| {
+                            ubiinfo!("{}", e);
+                            true
+                        });
+                    }
+                    _ => {}
+                }
             }
 
-            // your rendering, logic, update, etc
             self.window.clear();
-            self.window.swap_buffers(); 
+            self.window.swap_buffers();
         }
     }
-
-
 }
-

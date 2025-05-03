@@ -1,5 +1,6 @@
 use crate::ubiinfo;
-use crate::event::application_event::*;
+use crate::event::event::Event::{WindowResize, WindowClose};
+use crate::event::event_data::{WindowCloseEventData, WindowResizeEventData};
 use crate::window::window_trait::{UBIWindow, WindowData};
 
 use sdl2::{
@@ -73,18 +74,18 @@ impl UBIWindow for SdlWindow {
         self.window.gl_swap_window()
     }
     
-    fn poll_events(&mut self) -> Vec<Box<dyn crate::event::event::Event>> {
-        let mut events: Vec<Box<dyn crate::event::event::Event>> = Vec::new();
+    fn poll_events(&mut self) -> Vec<crate::event::event::Event> {
+        let mut events: Vec<crate::event::event::Event> = Vec::new();
         for event in self.event_pump.poll_iter() {
             match event {
                 sdl2::event::Event::Quit { .. } => {
-                    events.push(Box::new(WindowCloseEvent::new()));
+                    events.push(WindowClose(WindowCloseEventData::default()));
                 }
 
                 sdl2::event::Event::Window { win_event, .. } => {
                     match win_event {
                         sdl2::event::WindowEvent::Resized(width, height) => {
-                            events.push(Box::new(WindowResizeEvent::new(width, height)));
+                            events.push(WindowResize(WindowResizeEventData::new(width, height)));
                         }
                         _ => {}
                     }

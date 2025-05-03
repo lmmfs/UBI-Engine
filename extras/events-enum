@@ -1,0 +1,161 @@
+use std::fmt;
+use std::any::Any;
+use bitflags::bitflags;
+
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum EventType {
+    WindowClose,
+    WindowResize,
+    // Add other event types here
+}
+
+impl fmt::Display for EventType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
+bitflags! {
+    #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, Default)]
+    pub struct EventCategory: u32 {
+        const NONE = 0;
+        const APPLICATION = 1 << 0;
+        const INPUT = 1 << 1;
+        const KEYBOARD = 1 << 2;
+        const MOUSE = 1 << 3;
+        // Add other categories as needed
+    }
+}
+
+#[derive(Debug)]
+pub enum Event {
+    WindowClose(WindowCloseEventData),
+    WindowResize(WindowResizeEventData),
+    // Add other events here, potentially with their associated data
+}
+
+#[derive(Debug, Default, Copy, Clone)]
+pub struct WindowCloseEventData {
+    pub handled: bool,
+}
+
+#[derive(Debug, Copy, Clone)]
+pub struct WindowResizeEventData {
+    pub width: u32,
+    pub height: u32,
+    pub handled: bool,
+}
+
+impl Event {
+    pub fn event_type(&self) -> EventType {
+        match self {
+            Event::WindowClose(_) => EventType::WindowClose,
+            Event::WindowResize(_) => EventType::WindowResize,
+            // Handle other event types
+        }
+    }
+
+    pub fn name(&self) -> &'static str {
+        match self {
+            Event::WindowClose(_) => "WindowClose",
+            Event::WindowResize(_) => "WindowResize",
+            // Handle other event names
+        }
+    }
+
+    pub fn category_flags(&self) -> EventCategory {
+        match self {
+            Event::WindowClose(_) => EventCategory::APPLICATION,
+            Event::WindowResize(_) => EventCategory::APPLICATION,
+            // Handle other event categories
+        }
+    }
+
+    pub fn is_in_category(&self, category: EventCategory) -> bool {
+        self.category_flags().contains(category)
+    }
+
+    pub fn handled(&self) -> bool {
+        match self {
+            Event::WindowClose(data) => data.handled,
+            Event::WindowResize(data) => data.handled,
+            // Handle other event handled states
+        }
+    }
+
+    pub fn set_handled(&mut self, handled: bool) {
+        match self {
+            Event::WindowClose(data) => data.handled = handled,
+            Event::WindowResize(data) => data.handled = handled,
+            // Handle setting handled for other events
+        }
+    }
+
+    pub fn as_any_mut(&mut self) -> &mut dyn Any {
+        self
+    }
+}
+
+impl fmt::Display for Event {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Event::WindowClose(data) => write!(f, "WindowCloseEvent: handled={}", data.handled),
+            Event::WindowResize(data) => write!(f, "WindowResizeEvent: width={}, height={}, handled={}", data.width, data.height, data.handled),
+            // Handle other event display formats
+        }
+    }
+}
+
+pub fn map_sdl_event_to_engine_event(sdl_event: &sdl2::event::Event) -> Option<Event> {
+    match sdl_event {
+        sdl2::event::Event::Window { win_event, .. } => match win_event {
+            sdl2::event::WindowEvent::Close => Some(Event::WindowClose(WindowCloseEventData::default())),
+            sdl2::event::WindowEvent::Resized(width, height) => Some(Event::WindowResize(WindowResizeEventData {
+                width: *width as u32,
+                height: *height as u32,
+                handled: false,
+            })),
+            _ => None,
+        },
+        _ => None,
+    }
+}
+
+pub struct EventDispatcher {}
+
+impl EventDispatcher {
+    pub fn new() -> Self {
+        Self {}
+    }
+
+    pub fn dispatch<F>(&mut self, event: &mut Event, mut func: F) -> bool
+    where
+        F: FnMut(&mut Event) -> bool,
+    {
+        let handled = func(event);
+        event.set_handled(handled);
+        handled
+    }
+}
+
+fn main() {
+    let mut events: Vec<Event> = Vec::new();
+
+    // Example of adding events
+    events.push(Event::WindowClose(WindowCloseEventData::default()));
+    events.push(Event::WindowResize(WindowResizeEventData {
+        width: 800,
+        height: 600,
+        handled: false,
+    }));
+
+    for event in &mut events {
+        println!("{}", event);
+        event.set_handled(true);
+        println!("Handled: {}", event.handled());
+
+        if let Event::WindowResize(ref mut data) = event {
+            println!("Width: {}, Height: {}", data.width, data.height);
+        }
+    }
+}

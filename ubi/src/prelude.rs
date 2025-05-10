@@ -17,4 +17,5 @@ pub use crate::graphics::texture::*;
 pub use crate::window::wind_sdl::SdlWindow;
 pub use crate::window::window_trait::{UBIWindow, WindowData};
 pub use crate::layer::Layer;
+pub use crate::egui::egui_layer::EguiLayer;
 pub use crate::event::event::Event;

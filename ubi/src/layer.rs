@@ -3,7 +3,7 @@ use crate::event::event::Event;
 pub trait Layer {
     fn on_attach(&mut self);
     fn on_detach(&mut self);
-    fn on_update(&mut self);
+    fn on_update(&mut self, events: &mut Vec<Event>);
     fn on_event(&mut self, event: &mut Event);
 }
 

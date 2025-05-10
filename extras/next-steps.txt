@@ -1,3 +1,5 @@
-- split window and render
-- gui - egui crate
+passing events to layer on update
+egui events
+
+redering
 

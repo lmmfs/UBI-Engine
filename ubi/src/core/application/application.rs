@@ -45,9 +45,13 @@ impl<W: UBIWindow> Application<W> {
         self.running = true;
         let mut events: Vec<crate::event::event::Event> = Vec::new();
         while self.running {
+            // clear events and screen
+            events.clear();
+            self.window.clear();
+
             // Forward update layer stack
             for layer in self.layer_stack.iter_mut() {
-                layer.on_update();
+                layer.on_update(&mut events);
             }
 
             match self.window.poll_events(&mut events) {
@@ -60,10 +64,9 @@ impl<W: UBIWindow> Application<W> {
                     return Err(e);
                 }
             }
-
-            self.window.clear();
+            
             self.window.swap_buffers();
-            events.clear();
+            
         }
         Ok(())
     }

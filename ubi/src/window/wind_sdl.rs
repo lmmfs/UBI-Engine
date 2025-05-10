@@ -3,6 +3,7 @@ use crate::event::event::Event::{WindowClose, WindowResize};
 use crate::event::event_data::{WindowCloseEventData, WindowResizeEventData};
 use crate::ubiinfo;
 use crate::window::window_trait::{UBIWindow, WindowData};
+use std::rc::Rc;
 
 use sdl2::{
     video::{GLContext, SwapInterval, Window},
@@ -11,7 +12,7 @@ use sdl2::{
 
 pub struct SdlWindow {
     pub sdl: Sdl,
-    pub window: Window,
+    pub window: Rc<Window>,
     pub gl_context: GLContext,
     pub gl: (),
     pub event_pump: EventPump,
@@ -70,7 +71,7 @@ impl UBIWindow for SdlWindow {
 
         Ok(SdlWindow {
             sdl,
-            window,
+            window: window.into(),
             gl_context,
             gl,
             event_pump,
@@ -110,7 +111,10 @@ impl UBIWindow for SdlWindow {
     fn clear(&self) {
         unsafe {
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
-            gl::ClearColor(1.0, 0.0, 0.0, 1.0);
+            //51, 102, 204
+            //gl::ClearColor(51.0 / 255.0, 102.0 / 255.0, 204.0 / 255.0, 1.0);
+            gl::ClearColor(200.0 / 255.0, 200.0 / 255.0, 200.0 / 255.0, 1.0);
+
         }
     }
 

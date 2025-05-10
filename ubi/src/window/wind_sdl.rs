@@ -1,13 +1,13 @@
-use crate::ubiinfo;
-use crate::event::event::Event::{WindowResize, WindowClose};
+use crate::core::custom_error::UbiError;
+use crate::event::event::Event::{WindowClose, WindowResize};
 use crate::event::event_data::{WindowCloseEventData, WindowResizeEventData};
+use crate::ubiinfo;
 use crate::window::window_trait::{UBIWindow, WindowData};
 
 use sdl2::{
     video::{GLContext, SwapInterval, Window},
     EventPump, Sdl,
 };
-
 
 pub struct SdlWindow {
     pub sdl: Sdl,
@@ -18,12 +18,23 @@ pub struct SdlWindow {
 }
 
 impl UBIWindow for SdlWindow {
-    fn create(window_data: WindowData) -> Result<Self, String>
+    fn create(window_data: WindowData) -> Result<Self, UbiError>
     where
         Self: Sized,
     {
-        let sdl = sdl2::init().unwrap();
-        let video_subsystem = sdl.video().unwrap();
+        let sdl = match sdl2::init() {
+            Ok(sdl) => sdl,
+            Err(err) => {
+                return Err(UbiError::WindowError(err));
+            }
+        };
+
+        let video_subsystem = match sdl.video() {
+            Ok(video) => video,
+            Err(err) => {
+                return Err(UbiError::WindowError(err));
+            }
+        };
 
         // Add opengl atributes and context
         let gl_attr = video_subsystem.gl_attr();
@@ -73,36 +84,36 @@ impl UBIWindow for SdlWindow {
     fn swap_buffers(&self) {
         self.window.gl_swap_window()
     }
-    
-    fn poll_events(&mut self) -> Vec<crate::event::event::Event> {
-        let mut events: Vec<crate::event::event::Event> = Vec::new();
+
+    fn poll_events(
+        &mut self,
+        events: &mut Vec<crate::event::event::Event>,
+    ) -> Result<(), UbiError> {
         for event in self.event_pump.poll_iter() {
             match event {
                 sdl2::event::Event::Quit { .. } => {
                     events.push(WindowClose(WindowCloseEventData::default()));
                 }
 
-                sdl2::event::Event::Window { win_event, .. } => {
-                    match win_event {
-                        sdl2::event::WindowEvent::Resized(width, height) => {
-                            events.push(WindowResize(WindowResizeEventData::new(width, height)));
-                        }
-                        _ => {}
+                sdl2::event::Event::Window { win_event, .. } => match win_event {
+                    sdl2::event::WindowEvent::Resized(width, height) => {
+                        events.push(WindowResize(WindowResizeEventData::new(width, height)));
                     }
-                }
+                    _ => {}
+                },
                 _ => {}
             }
         }
-        events
+        Ok(())
     }
-    
+
     fn clear(&self) {
         unsafe {
             gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
             gl::ClearColor(1.0, 0.0, 0.0, 1.0);
         }
     }
-    
+
     fn resize(&self, width: i32, height: i32) {
         ubiinfo!("Resizing window to {}x{}", width, height);
         unsafe {

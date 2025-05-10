@@ -1,3 +1,5 @@
+use crate::core::custom_error::UbiError;
+
 pub struct WindowData<'a> {
     pub name: &'a str,
     pub width: usize,
@@ -15,10 +17,10 @@ impl Default for WindowData<'_> {
 }
 
 pub trait UBIWindow {
-    fn create(window_data: WindowData) -> Result<Self, String>
+    fn create(window_data: WindowData) -> Result<Self, UbiError>
     where
         Self: Sized;
-    fn poll_events(&mut self) -> Vec<crate::event::event::Event>;
+    fn poll_events(&mut self, events: &mut Vec<crate::event::event::Event>) -> Result<(), UbiError>;
     fn get_size(&self) -> (u32, u32);
     fn swap_buffers(&self);
     fn clear(&self);

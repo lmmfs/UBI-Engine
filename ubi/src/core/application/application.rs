@@ -1,3 +1,4 @@
+use crate::core::custom_error::UbiError;
 use crate::core::logger::init;
 use crate::event::event::{Event, EventDispatcher};
 use crate::layer::{Layer, LayerStack};
@@ -34,23 +35,31 @@ impl<W: UBIWindow> Application<W> {
         }
     }
 
-    pub fn run(&mut self) {
+    pub fn run(&mut self) -> Result<(), UbiError> {
         self.running = true;
-
+        let mut events: Vec<crate::event::event::Event> = Vec::new();
         while self.running {
             // Forward update layer stack
             for layer in self.layer_stack.iter_mut() {
                 layer.on_update();
             }
 
-            let events: Vec<Event> = self.window.poll_events();
-            for mut event in events {
-                self.on_event(&mut event);
+            match self.window.poll_events(&mut events) {
+                Ok(_) => {
+                    for event in &mut events {
+                        self.on_event(event);
+                    }
+                }
+                Err(e) => {
+                    return Err(e);
+                }
             }
 
             self.window.clear();
             self.window.swap_buffers();
+            events.clear();
         }
+        Ok(())
     }
 
     pub fn push_layer(&mut self, mut layer: Box<dyn Layer>) {
@@ -68,12 +77,13 @@ impl<W: UBIWindow> Application<W> {
         for layer in self.layer_stack.iter_mut().rev() {
             layer.on_event(event);
             if event.handled() {
-                break; // Stop propagating the event if a layer handles it
+                // Stop propagating the event if a layer handles it
+                break;
             }
         }
 
         if !event.handled() {
-            let mut dispatcher = EventDispatcher::new(); // Create a local dispatcher if needed
+            let mut dispatcher = EventDispatcher::new();
             match event {
                 Event::WindowClose(_) => {
                     dispatcher.dispatch(event, |e| {

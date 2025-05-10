@@ -1,6 +1,7 @@
 use crate::core::custom_error::UbiError;
 use crate::core::logger::init;
 use crate::event::event::{Event, EventDispatcher};
+use crate::graphics::render::Renderer;
 use crate::layer::{Layer, LayerStack};
 use crate::ubiinfo;
 use crate::window::wind_sdl::SdlWindow;
@@ -10,6 +11,7 @@ pub struct Application<W: UBIWindow> {
     window: W,
     running: bool,
     layer_stack: LayerStack,
+    renderer: Renderer,
 }
 
 // Specific SDL2 window
@@ -17,10 +19,12 @@ impl Application<SdlWindow> {
     pub fn with_sdl2(window_data: WindowData) -> Self {
         init();
         let window = SdlWindow::create(window_data).unwrap();
+        let renderer = Renderer::new().unwrap();
         Self {
             window,
             running: false,
             layer_stack: LayerStack::new(),
+            renderer: renderer,
         }
     }
 }
@@ -28,10 +32,12 @@ impl Application<SdlWindow> {
 impl<W: UBIWindow> Application<W> {
     pub fn new(window: W) -> Self {
         init();
+        let renderer = Renderer::new().unwrap();
         Self {
             window,
             running: false,
             layer_stack: LayerStack::new(),
+            renderer: renderer,
         }
     }
 

@@ -1,8 +1,4 @@
-use std::{
-    ffi::CString,
-    mem,
-    ptr::null,
-};
+use std::{ffi::CString, mem, ptr::null};
 
 use gl::types::{GLint, GLuint};
 // OpenGL Vertex Buffer Obejct

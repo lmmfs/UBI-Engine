@@ -14,7 +14,7 @@ impl Layer for GameLayer {
         println!("GameLayer detached");
     }
     fn on_update(&mut self, _: &mut Vec<Event>) {
-        todo!()
+        //println!("GameLayer update");
     }
     fn on_event(&mut self, event: &mut Event) {
         println!("GameLayer received: {}", event);

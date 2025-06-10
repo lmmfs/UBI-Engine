@@ -1,6 +1,6 @@
 use crate::core::custom_error::UbiError;
-use crate::event::event::Event::{WindowClose, WindowResize};
-use crate::event::event_data::{WindowCloseEventData, WindowResizeEventData};
+use crate::event::event::Event::{WindowClose, WindowResize, MouseButtonPressed};
+use crate::event::event_data::{MouseButtonPressedEventData, WindowCloseEventData, WindowResizeEventData};
 use crate::ubiinfo;
 use crate::window::window_trait::{UBIWindow, WindowData};
 use std::rc::Rc;
@@ -92,16 +92,31 @@ impl UBIWindow for SdlWindow {
     ) -> Result<(), UbiError> {
         for event in self.event_pump.poll_iter() {
             match event {
+                // Window close event
                 sdl2::event::Event::Quit { .. } => {
                     events.push(WindowClose(WindowCloseEventData::default()));
                 }
 
+                // Window resize event
                 sdl2::event::Event::Window { win_event, .. } => match win_event {
                     sdl2::event::WindowEvent::Resized(width, height) => {
                         events.push(WindowResize(WindowResizeEventData::new(width, height)));
                     }
                     _ => {}
                 },
+
+                sdl2::event::Event::MouseButtonDown {
+                    timestamp,
+                    window_id,
+                    which,
+                    mouse_btn,
+                    clicks,
+                    x,
+                    y,
+                } => {
+                    events.push(MouseButtonPressed(MouseButtonPressedEventData::new( mouse_btn as u32 )));
+                }
+
                 _ => {}
             }
         }
@@ -114,7 +129,6 @@ impl UBIWindow for SdlWindow {
             //51, 102, 204
             //gl::ClearColor(51.0 / 255.0, 102.0 / 255.0, 204.0 / 255.0, 1.0);
             gl::ClearColor(200.0 / 255.0, 200.0 / 255.0, 200.0 / 255.0, 1.0);
-
         }
     }
 

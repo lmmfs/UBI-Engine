@@ -131,6 +131,13 @@ pub struct MouseButtonPressedEventData {
 }
 
 impl MouseButtonPressedEventData {
+    pub fn new(button_code: u32) -> Self {
+        Self {
+            button_code: button_code,
+            handled: false,
+        }
+    }
+
     pub fn handled(&self) -> bool {
         self.handled
     }

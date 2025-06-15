@@ -127,13 +127,19 @@ impl MouseMovedEventData {
 #[derive(Debug)]
 pub struct MouseButtonPressedEventData {
     button_code: u32,
+    x: i32,
+    y: i32,
+    clicks: u32,
     handled: bool,
 }
 
 impl MouseButtonPressedEventData {
-    pub fn new(button_code: u32) -> Self {
+    pub fn new(button_code: u32, x: i32, y: i32, clicks: u32) -> Self {
         Self {
             button_code: button_code,
+            x: x,
+            y: y,
+            clicks: clicks,
             handled: false,
         }
     }
@@ -148,6 +154,10 @@ impl MouseButtonPressedEventData {
 
     pub fn get_button_code(&self) -> u32 {
         self.button_code
+    }
+
+    pub fn get_button_pos(&self) -> (i32, i32) {
+        (self.x, self.y)
     }
 }
 

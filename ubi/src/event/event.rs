@@ -154,8 +154,8 @@ impl fmt::Display for Event {
             ),
             Event::MouseButtonPressed(data) => write!(
                 f,
-                "MouseButtonPressedEvent: button_code={}, handled={}",
-                data.get_button_code(), data.handled()
+                "MouseButtonPressedEvent: button_code={}, x={}, y={}, handled={}",
+                data.get_button_code(), data.get_button_pos().0, data.get_button_pos().1,  data.handled()
             ),
             Event::MouseButtonReleased(data) => write!(
                 f,

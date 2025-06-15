@@ -106,15 +106,15 @@ impl UBIWindow for SdlWindow {
                 },
 
                 sdl2::event::Event::MouseButtonDown {
-                    timestamp,
-                    window_id,
-                    which,
+                    timestamp: _,
+                    window_id: _,
+                    which: _,
                     mouse_btn,
                     clicks,
                     x,
                     y,
                 } => {
-                    events.push(MouseButtonPressed(MouseButtonPressedEventData::new( mouse_btn as u32 )));
+                    events.push(MouseButtonPressed(MouseButtonPressedEventData::new( mouse_btn as u32, x, y, clicks as u32 )));
                 }
 
                 _ => {}

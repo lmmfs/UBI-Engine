@@ -1,5 +1,5 @@
 passing events to layer on update
 egui events
-
-redering
-
+clean code
+rendering
+clean code

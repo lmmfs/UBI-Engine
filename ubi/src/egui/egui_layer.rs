@@ -6,7 +6,6 @@ use egui::{Color32, Context as EguiContext, FullOutput, RawInput, TextureId};
 use egui_sdl2_gl as egui_backend;
 use egui_sdl2_gl::painter::Painter;
 use egui_sdl2_gl::{DpiScaling, EguiStateHandler, ShaderVersion};
-use sdl2::event::Event;
 use sdl2::video::Window;
 use std::rc::Rc;
 use std::time::Instant;
